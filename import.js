@@ -1,14 +1,10 @@
-const { Pool } = require('mysql2');
+const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
 const pool = new Pool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'hoteldeposit',
-    waitForConnections: true,
-    connectionLimit: 10
+    connectionString: process.env.DATABASE_URL || 'postgresql://localhost/hoteldeposit',
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 const generateSlug = (text) => {
