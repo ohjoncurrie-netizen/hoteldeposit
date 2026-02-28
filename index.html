@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenDeposit | Open Source Hotel Policy Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">Open<span>Deposit</span></div>
+            <ul class="nav-links">
+                <li><a href="#search">Find Policy</a></li>
+                <li><a href="https://github.com/your-username/repo" target="_blank">Open Source Code</a></li>
+                <li><a href="#" class="btn-outline">Add Hotel</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Transparent Hotel Deposits</h1>
+            <p>Access our community-driven, web-scraped API of hotel deposit policies. Trustable, readable, and 100% free.</p>
+            
+            <div class="search-box" id="search">
+                <input type="text" id="hotelQuery" placeholder="Search by Hotel Name or City (e.g. Great Falls)...">
+                <button onclick="searchPolicies()">Search API</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="loading" class="hidden">Searching database...</div>
+        <div id="results-grid" class="grid">
+            </div>
+    </main>
+
+    <footer class="container">
+        <hr>
+        <p>&copy; 2026 SUPPORTMT | Built for Montana Travelers & Global Transparency</p>
+    </footer>
+
+    <script>
+        // 1. Initialize Supabase Connection
+        // You get these from your Supabase Project Settings
+        const SUPABASE_URL = 'https://eccqzguunlgtytvqtkpl.supabase.co/auth/v1/.well-known/jwks.json;
+        const SUPABASE_KEY = 'ef1a1cd48-2739-40fc-b56f-5aec420d83d8; 
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function searchPolicies() {
+            const query = document.getElementById('hotelQuery').value;
+            const resultsDiv = document.getElementById('results-grid');
+            const loader = document.getElementById('loading');
+
+            loader.classList.remove('hidden');
+            resultsDiv.innerHTML = '';
+
+            // 2. Query your "scraped_policies" table
+            const { data, error } = await supabase
+                .from('hotel_policies')
+                .select('*')
+                .ilike('hotel_name', `%${query}%`); // Case-insensitive search
+
+            loader.classList.add('hidden');
+
+            if (error) {
+                console.error('Error fetching data:', error);
+                return;
+            }
+
+            // 3. Render the "Easy-to-Read" Cards
+            data.forEach(hotel => {
+                const card = document.createElement('div');
+                card.className = 'policy-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>${hotel.hotel_name}</h3>
+                        <span class="location">${hotel.city}, ${hotel.state}</span>
+                    </div>
+                    <div class="policy-details">
+                        <p><strong>Deposit:</strong> ${hotel.deposit_amount}</p>
+                        <p><strong>Refundable:</strong> ${hotel.is_refundable ? '✅ Yes' : '❌ No'}</p>
+                        <p class="summary">${hotel.policy_summary}</p>
+                    </div>
+                    <div class="card-footer">
+                        <small>Verified: ${new Date(hotel.last_verified).toLocaleDateString()}</small>
+                        <a href="${hotel.source_url}" target="_blank" class="source-link">Source Info</a>
+                    </div>
+                `;
+                resultsDiv.appendChild(card);
+            });
+        }
+
+        // Run initial load
+        searchPolicies();
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+:root {
+    --primary: #2563eb;
+    --dark: #0f172a;
+    --gray: #64748b;
+    --bg: #f8fafc;
+    --white: #ffffff;
+}
+
+body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; color: var(--dark); }
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.hidden { display: none; }
+
+/* Navigation */
+.navbar { background: var(--white); padding: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); sticky; top: 0; z-index: 100; }
+.nav-content { display: flex; justify-content: space-between; align-items: center; }
+.logo { font-size: 1.5rem; font-weight: 700; }
+.logo span { color: var(--primary); }
+.nav-links { list-style: none; display: flex; gap: 20px; align-items: center; }
+.nav-links a { text-decoration: none; color: var(--gray); font-weight: 500; }
+.btn-outline { border: 2px solid var(--primary); color: var(--primary) !important; padding: 8px 16px; border-radius: 6px; }
+
+/* Hero */
+.hero { background: var(--dark); color: var(--white); padding: 80px 0; text-align: center; }
+.hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+.search-box { margin-top: 30px; display: flex; justify-content: center; gap: 10px; }
+.search-box input { width: 400px; padding: 15px; border-radius: 8px; border: none; font-size: 1rem; }
+.search-box button { background: var(--primary); color: white; border: none; padding: 15px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+
+/* Grid & Cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 25px; margin-top: 50px; }
+.policy-card { background: var(--white); border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+.card-header h3 { margin: 0; color: var(--primary); }
+.location { font-size: 0.85rem; color: var(--gray); }
+.policy-details { margin: 20px 0; font-size: 0.95rem; }
+.summary { font-style: italic; color: var(--gray); margin-top: 10px; }
+.card-footer { border-top: 1px solid #e2e8f0; padding-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+.source-link { color: var(--primary); text-decoration: none; font-size: 0.85rem; font-weight: 600; }
