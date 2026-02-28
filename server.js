@@ -557,6 +557,101 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/blog', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'blog.html'));
+});
+
+app.get('/blog/:slug', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'blog-post.html'));
+});
+
+// Blog API
+app.get('/api/posts', async (req, res) => {
+    try {
+        const { status } = req.query;
+        let query = 'SELECT * FROM posts';
+        let params = [];
+        
+        if (status) {
+            query += ' WHERE status = $1';
+            params = [status];
+        }
+        query += ' ORDER BY published_at DESC, created_at DESC';
+        
+        const result = await pool.query(query, params);
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch posts' });
+    }
+});
+
+app.get('/api/posts/:slug', async (req, res) => {
+    try {
+        const { slug } = req.params;
+        const result = await pool.query('SELECT * FROM posts WHERE slug = $1', [slug]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to fetch post' });
+    }
+});
+
+app.post('/api/admin/posts', async (req, res) => {
+    try {
+        const { title, content, excerpt, featured_image, status, author, published_at } = req.body;
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        
+        const result = await pool.query(
+            `INSERT INTO posts (title, slug, content, excerpt, featured_image, status, author, published_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            [title, slug, content, excerpt, featured_image, status || 'draft', author, published_at]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to create post' });
+    }
+});
+
+app.put('/api/admin/posts/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, content, excerpt, featured_image, status, author, published_at } = req.body;
+        const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        
+        const result = await pool.query(
+            `UPDATE posts SET title = $1, slug = $2, content = $3, excerpt = $4, featured_image = $5,
+             status = $6, author = $7, published_at = $8, updated_at = CURRENT_TIMESTAMP
+             WHERE id = $9 RETURNING *`,
+            [title, slug, content, excerpt, featured_image, status, author, published_at, id]
+        );
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to update post' });
+    }
+});
+
+app.delete('/api/admin/posts/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await pool.query('DELETE FROM posts WHERE id = $1', [id]);
+        res.json({ success: true });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to delete post' });
+    }
+});
+
 app.use((req, res) => {
     res.status(404).json({ error: 'Not found' });
 });

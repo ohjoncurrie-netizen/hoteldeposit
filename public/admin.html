@@ -48,6 +48,10 @@
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
                     Brands
                 </a>
+                <a href="#" onclick="showSection('blog')" id="nav-blog" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Blog
+                </a>
                 <a href="#" onclick="showSection('import')" id="nav-import" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                     Import Data
@@ -227,6 +231,28 @@
                 </div>
                 <div id="import-result" class="mt-6"></div>
             </section>
+
+            <!-- Blog Section -->
+            <section id="section-blog" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Blog Posts</h1>
+                    <button onclick="openBlogModal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">New Post</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Author</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="posts-table" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -358,6 +384,52 @@
         </div>
     </div>
 
+    <!-- Blog Modal -->
+    <div id="blog-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-semibold text-lg">New Post</h3>
+                <button onclick="closeModal('blog-modal')" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="blog-form" class="p-6 space-y-4">
+                <input type="hidden" id="post-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" id="post-title" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Excerpt</label>
+                    <textarea id="post-excerpt" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Content</label>
+                    <textarea id="post-content" rows="10" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Featured Image URL</label>
+                    <input type="url" id="post-image" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <select id="post-status" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="draft">Draft</option>
+                            <option value="published">Published</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Author</label>
+                        <input type="text" id="post-author" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeModal('blog-modal')" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const API_BASE = window.location.origin;
         let allHotels = [];
@@ -380,6 +452,7 @@
                 case 'hotels': loadHotels(); break;
                 case 'policies': loadPolicies(); break;
                 case 'brands': loadBrands(); break;
+                case 'blog': loadPosts(); break;
             }
         }
 
@@ -561,6 +634,79 @@
             await fetch(`${API_BASE}/api/admin/brand/${id}`, { method: 'DELETE' });
             loadBrands();
         }
+
+        // Blog
+        async function loadPosts() {
+            const res = await fetch(`${API_BASE}/api/posts`);
+            const posts = await res.json();
+            
+            document.getElementById('posts-table').innerHTML = posts.map(p => `
+                <tr>
+                    <td class="px-6 py-4 font-medium">${p.title}</td>
+                    <td class="px-6 py-4"><span class="px-2 py-1 rounded-full text-xs ${p.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">${p.status}</span></td>
+                    <td class="px-6 py-4 text-gray-500">${p.author || '-'}</td>
+                    <td class="px-6 py-4 text-gray-500">${p.published_at ? new Date(p.published_at).toLocaleDateString() : '-'}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="editPost(${p.id})" class="text-blue-600 hover:text-blue-800 mr-3">Edit</button>
+                        <button onclick="deletePost(${p.id})" class="text-red-600 hover:text-red-800">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openBlogModal(post = null) {
+            document.getElementById('blog-form').reset();
+            document.getElementById('post-id').value = post ? post.id : '';
+            if (post) {
+                document.getElementById('post-title').value = post.title || '';
+                document.getElementById('post-excerpt').value = post.excerpt || '';
+                document.getElementById('post-content').value = post.content || '';
+                document.getElementById('post-image').value = post.featured_image || '';
+                document.getElementById('post-status').value = post.status || 'draft';
+                document.getElementById('post-author').value = post.author || '';
+            }
+            document.getElementById('blog-modal').classList.remove('hidden');
+            document.getElementById('blog-modal').classList.add('flex');
+        }
+
+        async function editPost(id) {
+            const res = await fetch(`${API_BASE}/api/posts`);
+            const posts = await res.json();
+            const post = posts.find(p => p.id === id);
+            if (post) openBlogModal(post);
+        }
+
+        async function deletePost(id) {
+            if (!confirm('Delete this post?')) return;
+            await fetch(`${API_BASE}/api/admin/posts/${id}`, { method: 'DELETE' });
+            loadPosts();
+        }
+
+        document.getElementById('blog-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('post-id').value;
+            const data = {
+                title: document.getElementById('post-title').value,
+                excerpt: document.getElementById('post-excerpt').value,
+                content: document.getElementById('post-content').value,
+                featured_image: document.getElementById('post-image').value,
+                status: document.getElementById('post-status').value,
+                author: document.getElementById('post-author').value,
+                published_at: document.getElementById('post-status').value === 'published' ? new Date().toISOString() : null
+            };
+            
+            const url = id ? `${API_BASE}/api/admin/posts/${id}` : `${API_BASE}/api/admin/posts`;
+            const method = id ? 'PUT' : 'POST';
+            
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            closeModal('blog-modal');
+            loadPosts();
+        });
 
         // Import
         async function importJSON() {

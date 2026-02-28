@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | HotelDeposit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-xl font-bold text-gray-900">Hotel<span class="text-blue-600">Deposit</span></a>
+            <nav class="flex gap-6">
+                <a href="/" class="text-gray-600 hover:text-gray-900">Search</a>
+                <a href="/blog" class="text-gray-900 font-medium">Blog</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Blog Content -->
+    <main class="max-w-6xl mx-auto px-4 py-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Hotel Deposit Blog</h1>
+        <p class="text-xl text-gray-600 mb-12">Tips, guides, and news about hotel deposits and travel policies</p>
+        
+        <div id="posts" class="grid md:grid-cols-3 gap-8">
+            <div class="col-span-3 text-center py-12 text-gray-500">Loading posts...</div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p>&copy; 2024 HotelDeposit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        async function loadPosts() {
+            const res = await fetch('/api/posts?status=published');
+            const posts = await res.json();
+            
+            if (posts.length === 0) {
+                document.getElementById('posts').innerHTML = '<div class="col-span-3 text-center py-12 text-gray-500">No posts yet. Check back soon!</div>';
+                return;
+            }
+            
+            document.getElementById('posts').innerHTML = posts.map(post => `
+                <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition">
+                    ${post.featured_image ? `<img src="${post.featured_image}" alt="${post.title}" class="w-full h-48 object-cover">` : ''}
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold mb-2"><a href="/blog/${post.slug}" class="text-gray-900 hover:text-blue-600">${post.title}</a></h2>
+                        <p class="text-gray-600 mb-4">${post.excerpt || ''}</p>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <span>${post.author || 'HotelDeposit'}</span>
+                            <span>${post.published_at ? new Date(post.published_at).toLocaleDateString() : ''}</span>
+                        </div>
+                    </div>
+                </article>
+            `).join('');
+        }
+        
+        loadPosts();
+    </script>
+</body>
+</html>

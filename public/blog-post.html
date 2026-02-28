@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post | HotelDeposit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/" class="text-xl font-bold text-gray-900">Hotel<span class="text-blue-600">Deposit</span></a>
+            <nav class="flex gap-6">
+                <a href="/" class="text-gray-600 hover:text-gray-900">Search</a>
+                <a href="/blog" class="text-gray-900 font-medium">Blog</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Post Content -->
+    <main class="max-w-3xl mx-auto px-4 py-12">
+        <a href="/blog" class="text-blue-600 hover:text-blue-800 mb-8 inline-block">&larr; Back to Blog</a>
+        
+        <article id="post">
+            <div class="text-center py-12 text-gray-500">Loading...</div>
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <p>&copy; 2024 HotelDeposit. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const slug = window.location.pathname.split('/').pop();
+        
+        async function loadPost() {
+            const res = await fetch(`/api/posts/${slug}`);
+            
+            if (!res.ok) {
+                document.getElementById('post').innerHTML = '<div class="text-center py-12"><h1 class="text-2xl font-bold text-gray-900 mb-4">Post Not Found</h1><p class="text-gray-600">The blog post you are looking for does not exist.</p></div>';
+                return;
+            }
+            
+            const post = await res.json();
+            
+            document.title = `${post.title} | HotelDeposit`;
+            
+            document.getElementById('post').innerHTML = `
+                ${post.featured_image ? `<img src="${post.featured_image}" alt="${post.title}" class="w-full h-64 object-cover rounded-xl mb-8">` : ''}
+                <h1 class="text-4xl font-bold text-gray-900 mb-4">${post.title}</h1>
+                <div class="flex justify-center gap-6 text-gray-500 mb-8 pb-8 border-b border-gray-200">
+                    <span>${post.author || 'HotelDeposit'}</span>
+                    <span>${post.published_at ? new Date(post.published_at).toLocaleDateString() : ''}</span>
+                </div>
+                <div class="prose max-w-none">
+                    ${post.content || ''}
+                </div>
+            `;
+        }
+        
+        loadPost();
+    </script>
+</body>
+</html>
