@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: hoteldeposit
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://hoteldeposit_org_user:f4AYvPqDciD7UAJRKRb9uqPq80jV3oaX@dpg-d6hk9194tr6s73btegdg-a.oregon-postgres.render.com/hoteldeposit_org
+      - key: NODE_ENV
+        value: production
