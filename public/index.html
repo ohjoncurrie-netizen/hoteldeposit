@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Deposit | Find Hotel Deposit Policies</title>
+    <meta name="description" content="Search and view hotel deposit policies effortlessly. Compare deposit amounts, hold durations, and refund terms across major hotel chains.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .deposit-badge {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .hold-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span class="text-xl font-bold text-gray-900">Hotel<span class="text-primary-600">Deposit</span></span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#search" class="text-gray-600 hover:text-primary-600 font-medium transition">Find Policy</a>
+                    <a href="#brands" class="text-gray-600 hover:text-primary-600 font-medium transition">Browse Brands</a>
+                    <a href="/submit" class="text-gray-600 hover:text-primary-600 font-medium transition">Submit Policy</a>
+                    <a href="/admin" class="px-4 py-2 border-2 border-primary-600 text-primary-600 rounded-lg font-medium hover:bg-primary-50 transition">Admin Login</a>
+                </div>
+                <button id="mobileMenuBtn" class="md:hidden p-2 text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-4 py-3 space-y-2">
+                <a href="#search" class="block py-2 text-gray-600 font-medium">Find Policy</a>
+                <a href="#brands" class="block py-2 text-gray-600 font-medium">Browse Brands</a>
+                <a href="/submit" class="block py-2 text-gray-600 font-medium">Submit Policy</a>
+                <a href="/admin" class="block py-2 text-primary-600 font-medium">Admin Login</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800 text-white py-20 lg:py-28">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+                Transparent Hotel Deposits
+            </h1>
+            <p class="text-lg md:text-xl text-primary-100 mb-10 max-w-2xl mx-auto">
+                Search and view hotel deposit policies effortlessly. Know exactly what you'll pay before you book.
+            </p>
+            
+            <!-- Search Box -->
+            <div id="search" class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-2xl p-2 flex flex-col md:flex-row gap-2">
+                    <div class="flex-1 relative">
+                        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput"
+                            placeholder="Search by hotel name or city..." 
+                            class="search-input w-full pl-12 pr-4 py-4 text-gray-900 text-lg rounded-xl border-0"
+                            autocomplete="off"
+                        >
+                    </div>
+                    <button 
+                        onclick="performSearch()"
+                        class="px-8 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl transition flex items-center justify-center gap-2"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <span>Search</span>
+                    </button>
+                </div>
+                
+                <!-- Quick Links -->
+                <div class="mt-6 flex flex-wrap justify-center gap-3">
+                    <span class="text-primary-200 text-sm">Popular:</span>
+                    <button onclick="quickSearch('Spokane')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition">Spokane</button>
+                    <button onclick="quickSearch('Boise')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition">Boise</button>
+                    <button onclick="quickSearch('Great Falls')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition">Great Falls</button>
+                    <button onclick="quickSearch('Seattle')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition">Seattle</button>
+                    <button onclick="quickSearch('Denver')" class="px-3 py-1 bg-white/10 hover:bg-white/20 rounded-full text-sm transition">Denver</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loading" class="hidden max-w-7xl mx-auto px-4 py-12 text-center">
+        <div class="inline-flex items-center gap-3 text-gray-600">
+            <svg class="animate-spin w-6 h-6" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-lg">Searching database...</span>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div id="resultsContainer">
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-16">
+                <svg class="w-24 h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Start Your Search</h3>
+                <p class="text-gray-500 max-w-md mx-auto">Enter a hotel name or city above to find deposit policies for hotels near you.</p>
+            </div>
+
+            <!-- Results Grid -->
+            <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+    </main>
+
+    <!-- Brands Section -->
+    <section id="brands" class="bg-gray-100 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-gray-900 text-center mb-4">Browse by Brand</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Explore deposit policies across major hotel chains.</p>
+            
+            <!-- Top 10 Hotel Chains Status Board -->
+            <div id="topBrandsBoard" class="bg-white rounded-2xl shadow-lg p-6 mb-12">
+                <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    Top 10 Hotel Chains
+                </h3>
+                <div id="topBrandsLoading" class="text-center py-8">
+                    <svg class="animate-spin w-8 h-8 mx-auto text-primary-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p class="text-gray-500 mt-2">Loading brand data...</p>
+                </div>
+                <div id="topBrandsList" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
+            </div>
+            
+            <div id="brandsGrid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="h-12 w-12 bg-blue-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-blue-600 font-bold">W</span>
+                    </div>
+                    <p class="font-medium text-gray-900">Wyndham</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="h-12 w-12 bg-red-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-red-600 font-bold">M</span>
+                    </div>
+                    <p class="font-medium text-gray-900">Marriott</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="h-12 w-12 bg-gray-800 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-white font-bold">H</span>
+                    </div>
+                    <p class="font-medium text-gray-900">Hilton</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="h-12 w-12 bg-red-200 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-red-800 font-bold">I</span>
+                    </div>
+                    <p class="font-medium text-gray-900">IHG</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="h-12 w-12 bg-purple-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-purple-600 font-bold">C</span>
+                    </div>
+                    <p class="font-medium text-gray-900">Choice</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm text-center">
+                    <div class="h-12 w-12 bg-yellow-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-yellow-600 font-bold">B</span>
+                    </div>
+                    <p class="font-medium text-gray-900">Best Western</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <h4 class="text-white font-semibold mb-4">HotelDeposit</h4>
+                    <p class="text-sm">Transparent hotel deposit policies for travelers worldwide.</p>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#search" class="hover:text-white transition">Find Policy</a></li>
+                        <li><a href="#brands" class="hover:text-white transition">Browse Brands</a></li>
+                        <li><a href="/submit" class="hover:text-white transition">Submit Policy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/api/docs" class="hover:text-white transition">API Docs</a></li>
+                        <li><a href="/about" class="hover:text-white transition">About</a></li>
+                        <li><a href="/privacy" class="hover:text-white transition">Privacy</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">Admin</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="/admin" class="hover:text-white transition">Login</a></li>
+                        <li><a href="/admin/import" class="hover:text-white transition">Bulk Import</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 text-center text-sm">
+                <p>&copy; 2026 HotelDeposit. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let searchTimeout = null;
+
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Search input handler with debounce
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (e.target.value.length >= 2) {
+                    performSearch();
+                } else if (e.target.value.length === 0) {
+                    showEmptyState();
+                }
+            }, 300);
+        });
+
+        // Enter key search
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                clearTimeout(searchTimeout);
+                performSearch();
+            }
+        });
+
+        function quickSearch(query) {
+            document.getElementById('searchInput').value = query;
+            performSearch();
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            
+            if (query.length < 2) {
+                showEmptyState();
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const emptyState = document.getElementById('emptyState');
+            const resultsGrid = document.getElementById('resultsGrid');
+
+            loading.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            resultsGrid.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`);
+                const hotels = await response.json();
+
+                loading.classList.add('hidden');
+
+                if (hotels.length === 0) {
+                    resultsGrid.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="text-gray-500 text-lg">No hotels found for "${query}"</p>
+                            <p class="text-gray-400 text-sm mt-2">Try searching for a different city or hotel name</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                hotels.forEach(hotel => {
+                    const card = createHotelCard(hotel);
+                    resultsGrid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error('Search error:', error);
+                loading.classList.add('hidden');
+                resultsGrid.innerHTML = `
+                    <div class="col-span-full text-center py-12">
+                        <p class="text-red-500">Failed to search. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function createHotelCard(hotel) {
+            const card = document.createElement('div');
+            card.className = 'card-hover bg-white rounded-2xl shadow-md overflow-hidden transition duration-300 border border-gray-100';
+            
+            const depositDisplay = hotel.deposit_display || (hotel.is_percentage ? `${hotel.deposit_amount}%` : `$${hotel.deposit_amount}`);
+            const lastUpdated = hotel.last_updated ? new Date(hotel.last_updated).toLocaleDateString() : 'N/A';
+
+            card.innerHTML = `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-lg text-gray-900 line-clamp-2">${hotel.hotel_name}</h3>
+                            <p class="text-gray-500 text-sm mt-1">${hotel.city}, ${hotel.state}</p>
+                        </div>
+                        ${hotel.brand_name ? `
+                            <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">${hotel.brand_name}</span>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="deposit-badge text-white px-3 py-1.5 rounded-lg text-sm font-semibold">
+                            ${depositDisplay} Deposit
+                        </span>
+                        ${hotel.hold_duration_days ? `
+                            <span class="hold-badge text-white px-3 py-1.5 rounded-lg text-sm font-semibold">
+                                ${hotel.hold_duration_days} Day Hold
+                            </span>
+                        ` : ''}
+                    </div>
+                    
+                    ${hotel.refund_terms ? `
+                        <p class="text-gray-600 text-sm line-clamp-2 mb-4">${hotel.refund_terms}</p>
+                    ` : ''}
+                    
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                        <span class="text-xs text-gray-400">Updated: ${lastUpdated}</span>
+                        <a href="/hotel/${hotel.slug}" class="text-primary-600 hover:text-primary-700 font-medium text-sm flex items-center gap-1">
+                            View Details
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function showEmptyState() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('resultsGrid').innerHTML = '';
+        }
+
+        // Initial search on page load if query param exists
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = urlParams.get('q');
+        if (initialQuery) {
+            document.getElementById('searchInput').value = initialQuery;
+            performSearch();
+        }
+
+        // Load Top 10 Brands
+        async function loadTopBrands() {
+            try {
+                const response = await fetch(`${API_BASE}/api/brands`);
+                const brands = await response.json();
+                
+                const topBrands = brands
+                    .sort((a, b) => (b.hotel_count || 0) - (a.hotel_count || 0))
+                    .slice(0, 10);
+
+                document.getElementById('topBrandsLoading').classList.add('hidden');
+                
+                if (topBrands.length === 0) {
+                    document.getElementById('topBrandsList').innerHTML = `
+                        <div class="col-span-full text-center py-8 text-gray-500">
+                            No brand data available yet.
+                        </div>
+                    `;
+                    return;
+                }
+
+                document.getElementById('topBrandsList').innerHTML = topBrands.map((brand, index) => `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer" onclick="filterByBrand('${brand.brand_name}')">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center justify-center w-8 h-8 rounded-full ${index < 3 ? 'bg-primary-100 text-primary-700' : 'bg-gray-200 text-gray-600'} font-bold text-sm">
+                                ${index + 1}
+                            </span>
+                            <span class="font-medium text-gray-900 truncate">${brand.brand_name}</span>
+                        </div>
+                        <span class="text-sm text-gray-500">${brand.hotel_count || 0} hotels</span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading brands:', error);
+                document.getElementById('topBrandsLoading').classList.add('hidden');
+                document.getElementById('topBrandsList').innerHTML = `
+                    <div class="col-span-full text-center py-8 text-red-500">
+                        Failed to load brand data.
+                    </div>
+                `;
+            }
+        }
+
+        function filterByBrand(brandName) {
+            document.getElementById('searchInput').value = brandName;
+            performSearch();
+            document.getElementById('search').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        loadTopBrands();
+    </script>
+</body>
+</html>

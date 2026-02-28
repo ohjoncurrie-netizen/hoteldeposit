@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | HotelDeposit</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <style>
+        .sidebar-link.active { background: #2563eb; color: white; }
+        .sidebar-link:hover:not(.active) { background: #f3f4f6; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-gray-200 min-h-screen fixed">
+            <div class="p-6">
+                <a href="/" class="flex items-center space-x-2">
+                    <span class="text-xl font-bold text-gray-900">Hotel<span class="text-blue-600">Deposit</span></span>
+                </a>
+                <span class="text-xs text-gray-500 block mt-1">Admin Panel</span>
+            </div>
+            <nav class="px-3 space-y-1">
+                <a href="#" onclick="showSection('dashboard')" id="nav-dashboard" class="sidebar-link active flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                    Dashboard
+                </a>
+                <a href="#" onclick="showSection('hotels')" id="nav-hotels" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    Hotels
+                </a>
+                <a href="#" onclick="showSection('policies')" id="nav-policies" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    Policies
+                </a>
+                <a href="#" onclick="showSection('brands')" id="nav-brands" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                    Brands
+                </a>
+                <a href="#" onclick="showSection('import')" id="nav-import" class="sidebar-link flex items-center px-4 py-3 text-gray-700 rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    Import Data
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="ml-64 flex-1 p-8">
+            <!-- Dashboard Section -->
+            <section id="section-dashboard">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Dashboard</h1>
+                
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Hotels</p>
+                                <p id="stat-hotels" class="text-3xl font-bold text-gray-900">-</p>
+                            </div>
+                            <div class="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Policies</p>
+                                <p id="stat-policies" class="text-3xl font-bold text-gray-900">-</p>
+                            </div>
+                            <div class="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Total Brands</p>
+                                <p id="stat-brands" class="text-3xl font-bold text-gray-900">-</p>
+                            </div>
+                            <div class="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-500">Avg Deposit</p>
+                                <p id="stat-avg-deposit" class="text-3xl font-bold text-gray-900">-</p>
+                            </div>
+                            <div class="h-12 w-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <h3 class="font-semibold text-gray-900 mb-4">Hotels by Brand</h3>
+                        <canvas id="brandChart"></canvas>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <h3 class="font-semibold text-gray-900 mb-4">Deposit Types</h3>
+                        <canvas id="depositTypeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Hotels -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h3 class="font-semibold text-gray-900">Recent Hotels</h3>
+                    </div>
+                    <div class="p-6">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="text-left text-sm text-gray-500">
+                                    <th class="pb-3">Hotel</th>
+                                    <th class="pb-3">City</th>
+                                    <th class="pb-3">Brand</th>
+                                    <th class="pb-3">Deposit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-hotels-table"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Hotels Section -->
+            <section id="section-hotels" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Hotels</h1>
+                    <button onclick="openModal('hotel-modal')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Add Hotel
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <div class="p-4 border-b border-gray-100">
+                        <input type="text" id="hotel-search" placeholder="Search hotels..." class="w-full px-4 py-2 border border-gray-300 rounded-lg" oninput="filterHotels()">
+                    </div>
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hotel</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Brand</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deposit</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hotels-table" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Policies Section -->
+            <section id="section-policies" class="hidden">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Policies Management</h1>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hotel</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deposit Amount</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hold Days</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="policies-table" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Brands Section -->
+            <section id="section-brands" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Brands</h1>
+                    <button onclick="openModal('brand-modal')" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Add Brand</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                    <table class="w-full">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Brand Name</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hotels</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="brands-table" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Import Section -->
+            <section id="section-import" class="hidden">
+                <h1 class="text-2xl font-bold text-gray-900 mb-6">Import Data</h1>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-900 mb-4">Import JSON</h3>
+                        <textarea id="json-input" rows="8" placeholder='{"brands": ["Wyndham"], "hotels": [{...}]}' class="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"></textarea>
+                        <button onclick="importJSON()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Import JSON</button>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="font-semibold text-gray-900 mb-4">Import CSV</h3>
+                        <p class="text-sm text-gray-500 mb-4">CSV format: name, brand, address, city, state, zip, country, phone, deposit_amount, is_percentage, hold_duration_days, refund_terms</p>
+                        <textarea id="csv-input" rows="8" placeholder="name,brand,city,state,deposit_amount&#10;Hotel Name,Wyndham,Spokane,WA,150,false,1" class="w-full px-4 py-2 border border-gray-300 rounded-lg font-mono text-sm"></textarea>
+                        <button onclick="importCSV()" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Import CSV</button>
+                    </div>
+                </div>
+                <div id="import-result" class="mt-6"></div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Hotel Modal -->
+    <div id="hotel-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-semibold text-lg">Add/Edit Hotel</h3>
+                <button onclick="closeModal('hotel-modal')" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="hotel-form" class="p-6 space-y-4">
+                <input type="hidden" id="hotel-id">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hotel Name</label>
+                        <input type="text" id="hotel-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Brand</label>
+                        <select id="hotel-brand" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                    <input type="text" id="hotel-address" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <input type="text" id="hotel-city" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                        <input type="text" id="hotel-state" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">ZIP</label>
+                        <input type="text" id="hotel-zip" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="text" id="hotel-phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <hr>
+                <h4 class="font-medium text-gray-900">Policy Details</h4>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Amount</label>
+                        <input type="number" step="0.01" id="policy-deposit" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Is Percentage?</label>
+                        <select id="policy-percentage" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                            <option value="false">No - Fixed Amount</option>
+                            <option value="true">Yes - Percentage</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hold Days</label>
+                        <input type="number" id="policy-hold-days" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Refund Terms</label>
+                    <textarea id="policy-refund" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeModal('hotel-modal')" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Hotel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Policy Edit Modal -->
+    <div id="policy-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-lg">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-semibold text-lg">Edit Policy</h3>
+                <button onclick="closeModal('policy-modal')" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="policy-form" class="p-6 space-y-4">
+                <input type="hidden" id="policy-hotel-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Deposit Amount</label>
+                    <input type="number" step="0.01" id="edit-deposit" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Is Percentage?</label>
+                    <select id="edit-percentage" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                        <option value="false">No - Fixed Amount</option>
+                        <option value="true">Yes - Percentage</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Hold Duration (Days)</label>
+                    <input type="number" id="edit-hold-days" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Refund Terms</label>
+                    <textarea id="edit-refund" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg"></textarea>
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeModal('policy-modal')" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Policy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Brand Modal -->
+    <div id="brand-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+            <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="font-semibold text-lg">Add Brand</h3>
+                <button onclick="closeModal('brand-modal')" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <form id="brand-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Brand Name</label>
+                    <input type="text" id="brand-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="flex justify-end gap-3 pt-4">
+                    <button type="button" onclick="closeModal('brand-modal')" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Brand</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let allHotels = [];
+        let allPolicies = [];
+        let allBrands = [];
+
+        // Navigation
+        function showSection(section) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`section-${section}`).classList.remove('hidden');
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            document.getElementById(`nav-${section}`).classList.add('active');
+            
+            loadSectionData(section);
+        }
+
+        async function loadSectionData(section) {
+            switch(section) {
+                case 'dashboard': loadDashboard(); break;
+                case 'hotels': loadHotels(); break;
+                case 'policies': loadPolicies(); break;
+                case 'brands': loadBrands(); break;
+            }
+        }
+
+        // Dashboard
+        async function loadDashboard() {
+            const [hotelsRes, policiesRes, brandsRes, analyticsRes] = await Promise.all([
+                fetch(`${API_BASE}/api/hotels`),
+                fetch(`${API_BASE}/api/policies`),
+                fetch(`${API_BASE}/api/brands`),
+                fetch(`${API_BASE}/api/admin/analytics`)
+            ]);
+
+            const hotels = await hotelsRes.json();
+            const policies = await policiesRes.json();
+            const brands = await brandsRes.json();
+            let analytics = {};
+            try { analytics = await analyticsRes.json(); } catch(e) {}
+
+            document.getElementById('stat-hotels').textContent = hotels.total || 0;
+            document.getElementById('stat-policies').textContent = policies.length || 0;
+            document.getElementById('stat-brands').textContent = brands.length || 0;
+            document.getElementById('stat-avg-deposit').textContent = analytics.avg_deposit || '$0';
+
+            // Charts
+            renderBrandChart(brands);
+            renderDepositTypeChart(policies);
+
+            // Recent hotels
+            const recent = hotels.hotels?.slice(0, 5) || [];
+            document.getElementById('recent-hotels-table').innerHTML = recent.map(h => `
+                <tr class="border-t border-gray-100">
+                    <td class="py-3 font-medium">${h.hotel_name}</td>
+                    <td class="py-3 text-gray-500">${h.city}, ${h.state}</td>
+                    <td class="py-3 text-gray-500">${h.brand_name || '-'}</td>
+                    <td class="py-3 font-medium text-green-600">$${h.deposit_amount || 0}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderBrandChart(brands) {
+            const ctx = document.getElementById('brandChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: brands.map(b => b.brand_name),
+                    datasets: [{ data: brands.map(b => b.hotel_count), backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16'] }]
+                }
+            });
+        }
+
+        function renderDepositTypeChart(policies) {
+            const fixed = policies.filter(p => !p.is_percentage).length;
+            const percent = policies.filter(p => p.is_percentage).length;
+            const ctx = document.getElementById('depositTypeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Fixed Amount', 'Percentage'],
+                    datasets: [{ data: [fixed, percent], backgroundColor: ['#10b981', '#f59e0b'] }]
+                }
+            });
+        }
+
+        // Hotels
+        async function loadHotels() {
+            const res = await fetch(`${API_BASE}/api/hotels?limit=100`);
+            const data = await res.json();
+            allHotels = data.hotels || [];
+            
+            // Load brands for modal
+            const brandsRes = await fetch(`${API_BASE}/api/brands`);
+            const brands = await brandsRes.json();
+            allBrands = brands;
+            
+            document.getElementById('hotel-brand').innerHTML = brands.map(b => `<option value="${b.id}">${b.brand_name}</option>`).join('');
+            
+            renderHotelsTable(allHotels);
+        }
+
+        function renderHotelsTable(hotels) {
+            document.getElementById('hotels-table').innerHTML = hotels.map(h => `
+                <tr>
+                    <td class="px-6 py-4 font-medium">${h.hotel_name}</td>
+                    <td class="px-6 py-4 text-gray-500">${h.city}, ${h.state}</td>
+                    <td class="px-6 py-4 text-gray-500">${h.brand_name || '-'}</td>
+                    <td class="px-6 py-4 font-medium text-green-600">${h.is_percentage ? h.deposit_amount + '%' : '$' + h.deposit_amount}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="editHotel(${h.id})" class="text-blue-600 hover:text-blue-800 mr-3">Edit</button>
+                        <button onclick="deleteHotel(${h.id})" class="text-red-600 hover:text-red-800">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterHotels() {
+            const query = document.getElementById('hotel-search').value.toLowerCase();
+            const filtered = allHotels.filter(h => h.hotel_name.toLowerCase().includes(query) || h.city.toLowerCase().includes(query));
+            renderHotelsTable(filtered);
+        }
+
+        function editHotel(id) {
+            const hotel = allHotels.find(h => h.id === id);
+            if (!hotel) return;
+            
+            document.getElementById('hotel-id').value = hotel.id;
+            document.getElementById('hotel-name').value = hotel.hotel_name;
+            document.getElementById('hotel-address').value = hotel.address || '';
+            document.getElementById('hotel-city').value = hotel.city;
+            document.getElementById('hotel-state').value = hotel.state || '';
+            document.getElementById('hotel-zip').value = hotel.zip || '';
+            document.getElementById('hotel-phone').value = hotel.phone || '';
+            document.getElementById('policy-deposit').value = hotel.deposit_amount || '';
+            document.getElementById('policy-percentage').value = String(hotel.is_percentage || 'false');
+            document.getElementById('policy-hold-days').value = hotel.hold_duration_days || 1;
+            document.getElementById('policy-refund').value = hotel.refund_terms || '';
+            
+            openModal('hotel-modal');
+        }
+
+        async function deleteHotel(id) {
+            if (!confirm('Delete this hotel?')) return;
+            const res = await fetch(`${API_BASE}/api/admin/hotel/${id}`, { method: 'DELETE' });
+            if (res.ok) loadHotels();
+        }
+
+        // Policies
+        async function loadPolicies() {
+            const res = await fetch(`${API_BASE}/api/policies`);
+            allPolicies = await res.json();
+            
+            const hotelsRes = await fetch(`${API_BASE}/api/hotels?limit=100`);
+            const hotelsData = await hotelsRes.json();
+            const hotels = hotelsData.hotels || [];
+            
+            const policyMap = {};
+            hotels.forEach(h => policyMap[h.id] = h.hotel_name);
+            
+            document.getElementById('policies-table').innerHTML = allPolicies.map(p => `
+                <tr>
+                    <td class="px-6 py-4 font-medium">${policyMap[p.hotel_id] || 'Hotel #' + p.hotel_id}</td>
+                    <td class="px-6 py-4 font-medium text-green-600">${p.is_percentage ? p.deposit_amount + '%' : '$' + p.deposit_amount}</td>
+                    <td class="px-6 py-4 text-gray-500">${p.is_percentage ? 'Percentage' : 'Fixed'}</td>
+                    <td class="px-6 py-4 text-gray-500">${p.hold_duration_days} days</td>
+                    <td class="px-6 py-4">
+                        <button onclick="editPolicy(${p.hotel_id})" class="text-blue-600 hover:text-blue-800">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function editPolicy(hotelId) {
+            const policy = allPolicies.find(p => p.hotel_id === hotelId);
+            document.getElementById('policy-hotel-id').value = hotelId;
+            document.getElementById('edit-deposit').value = policy?.deposit_amount || '';
+            document.getElementById('edit-percentage').value = String(policy?.is_percentage || 'false');
+            document.getElementById('edit-hold-days').value = policy?.hold_duration_days || 1;
+            document.getElementById('edit-refund').value = policy?.refund_terms || '';
+            openModal('policy-modal');
+        }
+
+        // Brands
+        async function loadBrands() {
+            const res = await fetch(`${API_BASE}/api/brands`);
+            const brands = await res.json();
+            
+            document.getElementById('brands-table').innerHTML = brands.map(b => `
+                <tr>
+                    <td class="px-6 py-4 font-medium">${b.brand_name}</td>
+                    <td class="px-6 py-4 text-gray-500">${b.hotel_count} hotels</td>
+                    <td class="px-6 py-4">
+                        <button onclick="deleteBrand(${b.id})" class="text-red-600 hover:text-red-800">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteBrand(id) {
+            if (!confirm('Delete this brand?')) return;
+            await fetch(`${API_BASE}/api/admin/brand/${id}`, { method: 'DELETE' });
+            loadBrands();
+        }
+
+        // Import
+        async function importJSON() {
+            const input = document.getElementById('json-input').value;
+            try {
+                const data = JSON.parse(input);
+                const res = await fetch(`${API_BASE}/api/admin/import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                document.getElementById('import-result').innerHTML = `<div class="p-4 bg-green-100 text-green-800 rounded-lg">${result.message || 'Import successful!'}</div>`;
+            } catch(e) {
+                document.getElementById('import-result').innerHTML = `<div class="p-4 bg-red-100 text-red-800 rounded-lg">Invalid JSON</div>`;
+            }
+        }
+
+        async function importCSV() {
+            const input = document.getElementById('csv-input').value;
+            const lines = input.trim().split('\n');
+            const hotels = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const cols = lines[i].split(',');
+                if (cols.length >= 4) {
+                    hotels.push({
+                        name: cols[0].trim(),
+                        brand: cols[1]?.trim(),
+                        city: cols[2]?.trim(),
+                        state: cols[3]?.trim(),
+                        deposit_amount: parseFloat(cols[4]) || 0,
+                        is_percentage: cols[5]?.trim() === 'true',
+                        hold_duration_days: parseInt(cols[6]) || 1,
+                        refund_terms: cols[7]?.trim() || ''
+                    });
+                }
+            }
+            
+            const res = await fetch(`${API_BASE}/api/admin/import`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ hotels })
+            });
+            const result = await res.json();
+            document.getElementById('import-result').innerHTML = `<div class="p-4 bg-green-100 text-green-800 rounded-lg">${result.message || 'Import successful!'}</div>`;
+        }
+
+        // Modal helpers
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+
+        // Form submissions
+        document.getElementById('hotel-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const hotelId = document.getElementById('hotel-id').value;
+            const data = {
+                name: document.getElementById('hotel-name').value,
+                brand_id: parseInt(document.getElementById('hotel-brand').value),
+                address: document.getElementById('hotel-address').value,
+                city: document.getElementById('hotel-city').value,
+                state: document.getElementById('hotel-state').value,
+                zip: document.getElementById('hotel-zip').value,
+                phone: document.getElementById('hotel-phone').value,
+                policy: {
+                    deposit_amount: parseFloat(document.getElementById('policy-deposit').value) || 0,
+                    is_percentage: document.getElementById('policy-percentage').value === 'true',
+                    hold_duration_days: parseInt(document.getElementById('policy-hold-days').value) || 1,
+                    refund_terms: document.getElementById('policy-refund').value
+                }
+            };
+            
+            const url = hotelId ? `${API_BASE}/api/admin/hotel/${hotelId}` : `${API_BASE}/api/admin/hotel`;
+            const method = hotelId ? 'PUT' : 'POST';
+            
+            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+            closeModal('hotel-modal');
+            loadHotels();
+        };
+
+        document.getElementById('policy-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const hotelId = document.getElementById('policy-hotel-id').value;
+            const data = {
+                deposit_amount: parseFloat(document.getElementById('edit-deposit').value),
+                is_percentage: document.getElementById('edit-percentage').value === 'true',
+                hold_duration_days: parseInt(document.getElementById('edit-hold-days').value),
+                refund_terms: document.getElementById('edit-refund').value
+            };
+            
+            await fetch(`${API_BASE}/api/admin/policy/${hotelId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            closeModal('policy-modal');
+            loadPolicies();
+        };
+
+        document.getElementById('brand-form').onsubmit = async (e) => {
+            e.preventDefault();
+            await fetch(`${API_BASE}/api/admin/brand`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ brand_name: document.getElementById('brand-name').value })
+            });
+            closeModal('brand-modal');
+            loadBrands();
+        };
+
+        // Initialize
+        loadDashboard();
+    </script>
+</body>
+</html>
